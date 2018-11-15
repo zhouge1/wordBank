@@ -12,6 +12,7 @@ import org.elasticsearch.common.xcontent.XContentFactory;
 import utils.EsClient;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.UUID;
 
 public class WordBankService {
@@ -61,6 +62,7 @@ public class WordBankService {
      * insert into es from datas
      */
     public static void addDataToES(JSONArray datas) {
+        Random rand = new Random();
         for (Object object : datas) {
             JSONObject wordBank = JSONObject.parseObject(object.toString());
             String type = wordBank.getString("type");
@@ -68,7 +70,7 @@ public class WordBankService {
             for (Object word : data) {
                 JSONObject esObject = new JSONObject();
                 esObject.put("word", word);
-                esObject.put("number", 1);
+                esObject.put("number", rand.nextInt(1000));
                 esObject.put("wordType", type);
                 bulkProcessor.add(new IndexRequest(WORD_BANK, WORD_BANK_TYPE, UUID.randomUUID().toString()).source(esObject));
             }

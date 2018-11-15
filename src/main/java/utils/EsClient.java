@@ -37,8 +37,8 @@ public class EsClient {
     // 连接
     private static TransportClient client = null;
     private static BulkProcessor bulkProcessor = null;
-    //private static String host = "localhost";
-    private static String host = "192.168.72.6";
+    private static String host = "localhost";
+    //private static String host = "192.168.72.6";
     private static int port = 9300;
     static {
         try {
