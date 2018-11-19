@@ -7,13 +7,16 @@ import org.elasticsearch.action.admin.indices.mapping.put.PutMappingRequest;
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Requests;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import query.terms;
 import utils.EsClient;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Random;
-import java.util.UUID;
+import java.util.Set;
 
 public class WordBankService {
 
@@ -21,12 +24,17 @@ public class WordBankService {
     private static final BulkProcessor bulkProcessor = EsClient.getBulkProcessorsec();
     private static final String WORD_BANK = "word_bank";
     private static final String WORD_BANK_TYPE = "doc";
+    private static TransportClient client = null;
 
+    static {
+        client = EsClient.getClient();
+    }
     /**
      * create index form word_bank mapping
      */
     public static void createWordBank() {
         //String indexName = "word_bank";
+        new EsClient().deleteIndex(WORD_BANK);
         if (!EsClient.indexExists(WORD_BANK)) {
             EsClient.createCluterName(WORD_BANK);
             XContentBuilder builder = null;
@@ -67,12 +75,19 @@ public class WordBankService {
             JSONObject wordBank = JSONObject.parseObject(object.toString());
             String type = wordBank.getString("type");
             JSONArray data = wordBank.getJSONArray("data");
+            Set<String> set = new HashSet<String>();
             for (Object word : data) {
-                JSONObject esObject = new JSONObject();
-                esObject.put("word", word);
-                esObject.put("number", rand.nextInt(1000));
-                esObject.put("wordType", type);
-                bulkProcessor.add(new IndexRequest(WORD_BANK, WORD_BANK_TYPE, UUID.randomUUID().toString()).source(esObject));
+                set.add(word.toString());
+            }
+            set = terms.termsApi(client,"word_bank","word",set);
+            for (Object word : data) {
+                if(!set.contains(word)) {
+                    JSONObject esObject = new JSONObject();
+                    esObject.put("word", word);
+                    esObject.put("number", rand.nextInt(1000));
+                    esObject.put("wordType", type);
+                    bulkProcessor.add(new IndexRequest(WORD_BANK, WORD_BANK_TYPE).source(esObject));
+                }
             }
         }
         bulkProcessor.flush();

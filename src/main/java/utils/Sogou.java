@@ -2,12 +2,18 @@ package utils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.elasticsearch.client.transport.TransportClient;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.*;
 
 public class Sogou {
+    private static TransportClient client = null;
+
+    static {
+        client = EsClient.getClient();
+    }
     /**
      * @return eg.
      * [
@@ -156,7 +162,10 @@ public class Sogou {
         JSONArray data = new JSONArray();
         for (WordLibrary w : pyAndWord) {
             //System.out.println(w.getWord());
-            data.add(w.getWord());
+            String word = w.getWord();
+            if(word.trim().length()>0) {
+                data.add(word);
+            }
         }
         result.put("data", data);
         //System.out.println(result);

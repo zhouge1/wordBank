@@ -8,6 +8,7 @@ import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import utils.EsClient;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,11 +63,11 @@ public class terms {
      * @param field
      * @param values
      */
-    public static Set<String> termsApi(TransportClient client,String index,String field,Set<String> values){
+    public static Set<String> termsApi(TransportClient client,String index,String field,Collection<String> values){
         TermsQueryBuilder termsQueryBuilder =  QueryBuilders.termsQuery(field,values);
         SearchResponse response = client.prepareSearch(index)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-                .setQuery(termsQueryBuilder)                 // Query
+                .setQuery(termsQueryBuilder).setSize(10000)                 // Query
                 .execute().actionGet();
         //TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery("word","");
         Set<String> result = new HashSet<String>();
