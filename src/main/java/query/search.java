@@ -7,10 +7,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import utils.EsClient;
-
-import java.util.Iterator;
 
 
 public class search {
