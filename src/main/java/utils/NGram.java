@@ -3,10 +3,7 @@ package utils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.collect.HppcMaps;
 import query.terms;
-
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
@@ -22,8 +19,17 @@ public class NGram {
     public static void main(String[] args) {
 	System.out.println("-----------------");
 	//String text = "大漠孤烟直，长河落日圆秦淮河，中国(长江)下游右岸{支流。古称龙}藏浦，汉代<起>称淮水，唐以后改/称《秦淮》。 [1]  秦淮河有南北两源，北源句容河发源于句容市宝华山南麓，南源溧水河发源于南京市溧水区东庐山，两河在南京市江宁区方山埭西北村汇合成秦淮河干流，绕过方山向西北至外城城门上坊门从东水关流入南京城，由东向西横贯市区，南部从西水关流出，注入长江。";
-	String text = "床前明月光，疑是地上霜。\n" +
-			      "举头望明月，低头思故乡。";
+	String text = "汉语属于汉藏语系分析语，有声调。\n" +
+			"汉字起源于图画。在汉字产生的早期阶段，象形字的字形跟它所代表的语素的意义直接发生联系。\n" +
+			"虽然每个字也都有自己固定的读音，但是字形本身不是表音的符号，跟拼音文字的字母的性质不同。\n" +
+			"象形字的读音是它所代表的语素转嫁给它的。\n" +
+			"随着字形的演变，象形字变得越来越不象形。\n" +
+			"结果是字形跟它所代表的语素在意义上也失去了原有的联系。\n" +
+			"这个时候，字形本身既不表音，也不表义，变成了抽象的记号。\n" +
+			"如果汉语里所有的语素都是由这种既不表音也不表义的记号代表的，那么汉字可以说是一种纯记号文字。\n" +
+			"不过事实并非如此。汉字有独体字与合体字的区别。\n" +
+			"只有独体字才是纯粹的记号文字。合体字是由独体字组合造成的。\n" +
+			"从构造上说，合体字比独体字高一个层次。因为组成合体字的独体字本身虽然也是记号，可是当它作为合体字的组成成分时，它是以有音有义的“字”的身份参加的。";
 
 	//System.out.println(getWords(text).toJavaList(String.class));
 	Set<String> words = terms.termsApi(client,"word_bank","word",getWords(text).toJavaList(String.class));

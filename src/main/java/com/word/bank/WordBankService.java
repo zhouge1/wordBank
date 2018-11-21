@@ -75,20 +75,38 @@ public class WordBankService {
             JSONObject wordBank = JSONObject.parseObject(object.toString());
             String type = wordBank.getString("type");
             JSONArray data = wordBank.getJSONArray("data");
-            Set<String> set = new HashSet<String>();
-            for (Object word : data) {
-                set.add(word.toString());
-            }
-            set = terms.termsApi(client,"word_bank","word",set);
-            for (Object word : data) {
-                if(!set.contains(word)) {
-                    JSONObject esObject = new JSONObject();
-                    esObject.put("word", word);
-                    esObject.put("number", rand.nextInt(1000));
-                    esObject.put("wordType", type);
-                    bulkProcessor.add(new IndexRequest(WORD_BANK, WORD_BANK_TYPE).source(esObject));
+            int size = data.size();
+            Set<String> set1000 = new HashSet<String>();
+            for(int i=0;i<size;i++){
+                set1000.add(data.getString(i));
+                if(i%1001==0 || i==size-1){
+                    Set<String> repeatSet = terms.termsApi(client,"word_bank","word",set1000);
+                    for (Object word : set1000) {
+                        if(!repeatSet.contains(word)) {
+                            JSONObject esObject = new JSONObject();
+                            esObject.put("word", word);
+                            esObject.put("number", rand.nextInt(1000));
+                            esObject.put("wordType", type);
+                            bulkProcessor.add(new IndexRequest(WORD_BANK, WORD_BANK_TYPE).source(esObject));
+                        }
+                    }
+                    set1000.clear();
                 }
             }
+//            Set<String> set = new HashSet<String>();
+//            for (Object word : data) {
+//                set.add(word.toString());
+//            }
+//            set = terms.termsApi(client,"word_bank","word",set);
+//            for (Object word : data) {
+//                if(!set.contains(word)) {
+//                    JSONObject esObject = new JSONObject();
+//                    esObject.put("word", word);
+//                    esObject.put("number", rand.nextInt(1000));
+//                    esObject.put("wordType", type);
+//                    bulkProcessor.add(new IndexRequest(WORD_BANK, WORD_BANK_TYPE).source(esObject));
+//                }
+//            }
         }
         bulkProcessor.flush();
         bulkProcessor.close();
